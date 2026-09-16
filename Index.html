@@ -1,0 +1,27 @@
+# 🍏 Plataforma de Gestão Nutricional
+
+Uma plataforma web sob medida para gestão de acompanhamentos nutricionais, criação de dietas e comunicação direta entre a nutricionista e seus pacientes.
+
+## 🚀 Funcionalidades Principais
+
+* **Gestão de Pacientes:** Cadastro completo com informações essenciais (idade, sexo, peso, altura, histórico clínico e restrições).
+* **Prontuário e Evolução:** Acompanhamento de métricas de saúde e evolução antropométrica com registro histórico.
+* **Prescrição Dietética:** Criação de planos alimentares, fichas individualizadas e opções de substituição.
+* **Comunicação Direta:** Chat integrado para os pacientes tirarem dúvidas rápidas e individuais.
+* **Mural de Dicas:** Sistema de publicações onde a nutricionista pode soltar dicas do dia (visíveis para todos) ou recomendações específicas (visíveis apenas para um paciente).
+
+## 🛠 Arquitetura Planejada
+
+* **Frontend:** Aplicação Web Responsiva (estruturada para futura conversão em App via PWA/React Native).
+* **Backend:** API desenvolvida em Python (ideal para lidar com a lógica de dados e futuras automações, como processamento e leitura de PDFs de exames laboratoriais).
+* **Controle de Versão e Deploy:** Repositório gerenciado no GitHub com fluxos de integração contínua (CI/CD).
+
+## 🗄️ Modelagem Inicial do Banco de Dados (Rascunho)
+
+| Tabela | Descrição e Campos Principais |
+| :--- | :--- |
+| `Pacientes` | ID, Nome, Idade, Sexo, Contato, Data_Cadastro |
+| `Avaliacoes` | ID, Paciente_ID, Data, Peso, Altura, Notas_Gerais |
+| `Dietas` | ID, Paciente_ID, Data_Criacao, Descricao_Plano, Ativa (S/N) |
+| `Dicas` | ID, Titulo, Conteudo, Publica (S/N), Paciente_ID_Alvo |
+| `Mensagens` | ID, Paciente_ID, Remetente, Conteudo, Data_Hora (Para o chat) |
