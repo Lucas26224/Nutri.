@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desempenhos - NutriDash</title>
+    <!-- Importando o Chart.js para desenhar os gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; display: flex; height: 100vh; color: #333; }
+        
+        /* Menu Lateral */
+        .sidebar { width: 250px; background-color: #2c3e50; padding: 20px; display: flex; flex-direction: column; }
+        .sidebar h2 { color: #2ecc71; margin-bottom: 30px; text-align: center; font-size: 24px; }
+        .sidebar a { color: white; text-decoration: none; padding: 12px; margin-bottom: 10px; border-radius: 5px; transition: 0.2s; font-weight: 500; }
+        .sidebar a:hover, .sidebar a.ativo { background-color: #34495e; border-left: 4px solid #2ecc71; }
+        
+        /* Área Principal */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Controles e Gráficos */
+        .controles { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        .controles select { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; outline: none; }
+        
+        .graficos-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .grafico-card { background: white; padding: 20px; border-radius: 10px; flex: 1; min-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        
+        @media (max-width: 768px) { .grafico-card { min-width: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🍏 NutriDash</h2>
+        <a href="index.html">🏠 Visão Geral</a>
+        <a href="agendamentos.html">📅 Agendamentos</a>
+        <a href="desempenhos.html" class="ativo">📈 Desempenhos</a>
+        <a href="#">📋 Meus Pacientes</a>
+        <a href="#">🥗 Dietas e Fichas</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Acompanhamento de Desempenho</h1>
+        </div>
+
+        <div class="controles">
+            <select id="pacienteSelect">
+                <option value="maria">Paciente: Maria da Silva</option>
+                <option value="joao">Paciente: João Pedro</option>
+            </select>
+            
+            <select id="periodoSelect" onchange="atualizarGraficos()">
+                <option value="meses">Visão: Mensal</option>
+                <option value="dias">Visão: Últimos 30 Dias</option>
+            </select>
+        </div>
+
+        <div class="graficos-container">
+            <div class="grafico-card">
+                <h3 style="margin-bottom: 15px; color: #2c3e50; text-align: center;">Evolução de Peso (kg)</h3>
+                <canvas id="graficoPeso"></canvas>
+            </div>
+            
+            <div class="grafico-card">
+                <h3 style="margin-bottom: 15px; color: #2c3e50; text-align: center;">Composição Corporal (%)</h3>
+                <canvas id="graficoComposicao"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados simulados para Meses e Dias
+        const dadosMeses = { labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai'], peso: [75, 73, 71.5, 70, 68.5], gordura: [28, 26, 24.5, 23, 21], massaMagra: [30, 30.5, 31, 31.5, 32] };
+        const dadosDias = { labels: ['01/Mai', '08/Mai', '15/Mai', '22/Mai', '29/Mai'], peso: [70, 69.5, 69.2, 68.8, 68.5], gordura: [23, 22.5, 22.1, 21.5, 21], massaMagra: [31.5, 31.6, 31.8, 31.9, 32] };
+
+        // Configuração inicial dos gráficos
+        let ctxPeso = document.getElementById('graficoPeso').getContext('2d');
+        let ctxComp = document.getElementById('graficoComposicao').getContext('2d');
+
+        let chartPeso = new Chart(ctxPeso, {
+            type: 'line',
+            data: { labels: dadosMeses.labels, datasets: [{ label: 'Peso (kg)', data: dadosMeses.peso, borderColor: '#e74c3c', backgroundColor: 'rgba(231, 76, 60, 0.1)', tension: 0.3, fill: true }] }
+        });
+
+        let chartComp = new Chart(ctxComp, {
+            type: 'line',
+            data: { labels: dadosMeses.labels, datasets: [
+                { label: '% Gordura', data: dadosMeses.gordura, borderColor: '#f1c40f', tension: 0.3 },
+                { label: '% Massa Magra', data: dadosMeses.massaMagra, borderColor: '#2ecc71', tension: 0.3 }
+            ]}
+        });
+
+        // Função que troca os dados quando muda de Meses para Dias
+        function atualizarGraficos() {
+            let periodo = document.getElementById('periodoSelect').value;
+            let dadosAtuais = periodo === 'meses' ? dadosMeses : dadosDias;
+
+            chartPeso.data.labels = dadosAtuais.labels;
+            chartPeso.data.datasets[0].data = dadosAtuais.peso;
+            chartPeso.update();
+
+            chartComp.data.labels = dadosAtuais.labels;
+            chartComp.data.datasets[0].data = dadosAtuais.gordura;
+            chartComp.data.datasets[1].data = dadosAtuais.massaMagra;
+            chartComp.update();
+        }
+    </script>
+</body>
+</html>
