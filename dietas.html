@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dietas e Fichas - NutriDash</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; display: flex; height: 100vh; color: #333; }
+        
+        /* Menu Lateral */
+        .sidebar { width: 250px; background-color: #2c3e50; padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar h2 { color: #2ecc71; margin-bottom: 30px; text-align: center; font-size: 24px; }
+        .sidebar a { color: white; text-decoration: none; padding: 12px; margin-bottom: 10px; border-radius: 5px; transition: 0.2s; font-weight: 500; }
+        .sidebar a:hover, .sidebar a.ativo { background-color: #34495e; border-left: 4px solid #2ecc71; }
+        
+        /* Área Principal */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Controles (Selecionar Paciente) */
+        .controles { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        .controles select, .controles input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; outline: none; width: 300px; }
+        
+        .btn-salvar { background-color: #2ecc71; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 15px; transition: 0.2s; }
+        .btn-salvar:hover { background-color: #27ae60; }
+
+        /* Ficha de Refeições */
+        .ficha-container { display: flex; flex-direction: column; gap: 20px; }
+        .refeicao-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.03); }
+        .refeicao-card h3 { color: #2c3e50; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Linhas de Alimentos */
+        .linha-alimento { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
+        .linha-alimento input[type="text"] { flex: 2; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .linha-alimento input.qtd { flex: 1; }
+        
+        .btn-add { background-color: #e8f8f5; color: #27ae60; border: 1px dashed #2ecc71; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.2s; }
+        .btn-add:hover { background-color: #d1f2eb; }
+        
+        .btn-remover { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 18px; padding: 0 5px; }
+        .btn-remover:hover { transform: scale(1.1); }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>🍏 NutriDash</h2>
+        <a href="index.html">🏠 Visão Geral</a>
+        <a href="agendamentos.html">📅 Agendamentos</a>
+        <a href="desempenhos.html">📈 Desempenhos</a>
+        <a href="#">📋 Meus Pacientes</a>
+        <a href="dietas.html" class="ativo">🥗 Dietas e Fichas</a>
+        <a href="#">💬 Chat (Dúvidas)</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Montagem de Dieta</h1>
+        </div>
+
+        <div class="controles">
+            <div>
+                <label style="display: block; font-size: 13px; color: #7f8c8d; margin-bottom: 5px;">Selecione o Paciente:</label>
+                <select id="pacienteSelect">
+                    <option value="">-- Escolha um paciente --</option>
+                    <option value="maria">Maria da Silva</option>
+                    <option value="joao">João Pedro</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-size: 13px; color: #7f8c8d; margin-bottom: 5px;">Objetivo da Dieta:</label>
+                <input type="text" placeholder="Ex: Hipertrofia, Emagrecimento...">
+            </div>
+            <button class="btn-salvar" onclick="salvarDieta()">💾 Salvar Ficha</button>
+        </div>
+
+        <div class="ficha-container">
+            
+            <!-- Café da Manhã -->
+            <div class="refeicao-card">
+                <h3>🌅 Café da Manhã</h3>
+                <div id="lista-cafe">
+                    <!-- Linha Padrão -->
+                    <div class="linha-alimento">
+                        <input type="text" placeholder="Alimento (Ex: Pão Integral)">
+                        <input type="text" class="qtd" placeholder="Quantidade (Ex: 2 fatias)">
+                        <button class="btn-remover" onclick="removerLinha(this)">❌</button>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="adicionarLinha('lista-cafe')">+ Adicionar mais um alimento</button>
+            </div>
+
+            <!-- Lanche da Manhã -->
+            <div class="refeicao-card">
+                <h3>🍎 Lanche da Manhã</h3>
+                <div id="lista-lanche-manha"></div>
+                <button class="btn-add" onclick="adicionarLinha('lista-lanche-manha')">+ Adicionar alimento</button>
+            </div>
+
+            <!-- Almoço -->
+            <div class="refeicao-card">
+                <h3>🍲 Almoço</h3>
+                <div id="lista-almoco"></div>
+                <button class="btn-add" onclick="adicionarLinha('lista-almoco')">+ Adicionar alimento</button>
+            </div>
+
+            <!-- Lanche da Tarde -->
+            <div class="refeicao-card">
+                <h3>☕ Lanche da Tarde</h3>
+                <div id="lista-lanche-tarde"></div>
+                <button class="btn-add" onclick="adicionarLinha('lista-lanche-tarde')">+ Adicionar alimento</button>
+            </div>
+
+            <!-- Jantar -->
+            <div class="refeicao-card">
+                <h3>🍽️ Jantar</h3>
+                <div id="lista-jantar"></div>
+                <button class="btn-add" onclick="adicionarLinha('lista-jantar')">+ Adicionar alimento</button>
+            </div>
+
+            <!-- Ceia (Lanche Noturno) -->
+            <div class="refeicao-card">
+                <h3>🌙 Lanche Noturno (Ceia)</h3>
+                <div id="lista-ceia"></div>
+                <button class="btn-add" onclick="adicionarLinha('lista-ceia')">+ Adicionar alimento</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Função para criar uma nova linha de alimento vazia
+        function adicionarLinha(idContainer) {
+            const container = document.getElementById(idContainer);
+            
+            const div = document.createElement('div');
+            div.className = 'linha-alimento';
+            
+            div.innerHTML = `
+                <input type="text" placeholder="Alimento (Ex: Ovo cozido)">
+                <input type="text" class="qtd" placeholder="Quantidade (Ex: 2 unidades)">
+                <button class="btn-remover" onclick="removerLinha(this)">❌</button>
+            `;
+            
+            container.appendChild(div);
+        }
+
+        // Função para apagar uma linha caso ela desista do alimento
+        function removerLinha(botao) {
+            botao.parentElement.remove();
+        }
+
+        // Função simulando o salvamento (Futuramente irá para o Firebase)
+        function salvarDieta() {
+            let paciente = document.getElementById('pacienteSelect').value;
+            if(!paciente) {
+                alert("Por favor, selecione um paciente antes de salvar a ficha!");
+                return;
+            }
+            alert("Ficha salva com sucesso! (Pronta para integração futura com Firebase).");
+        }
+    </script>
+</body>
+</html>
